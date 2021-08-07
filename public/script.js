@@ -13,23 +13,24 @@ void async function () {
 
     const socket = io('/');
     const videoGrid = document.getElementById('video-grid');
-
+    const myVideo = document.createElement('video');
+    myVideo.muted = true;
+    const peer = {};
 
     const myPeer = new Peer(undefined, {
         host: '/',
         port: '3001'
     });
 
-    socket.on('user-disconnect', userId => {
-        console.log(userId)
+    socket.on('user-disconnected', userId => {
+        if (peer[userId]) {
+            peer[userId].close();
+        }
     })
 
     myPeer.on('open', id => {
         socket.emit('join-room', ROOM_ID, id);
     });
-
-    const myVideo = document.createElement('video');
-    myVideo.muted = true;
 
     navigator.mediaDevices.getUserMedia({
         video: true,
@@ -44,7 +45,6 @@ void async function () {
                 addVideoStream(video, userVStream);
             })
         })
-
 
         socket.on('user-connected', userId => {
             connectToNewUser(userId, stream);
@@ -65,7 +65,9 @@ void async function () {
 
         call.on('close', () => {
             video.remove();
-        })
+        });
+
+        peer[userId] = call
     }
 
     function addVideoStream(video, stream) {

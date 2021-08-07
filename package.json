@@ -1,7 +1,7 @@
 {
-  "name": "Zoom_Clone",
+  "name": "zoom_clone",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "license": "MIT",
   "scripts": {
     "devStart":"nodemon server.js"
